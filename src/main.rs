@@ -50,21 +50,22 @@ fn main() {
             EventType::ButtonReleased(button) => {
                 pressed_buttons.remove(&map_code(button.into_u32()));
             }
+            EventType::AxisValueChanged(data, axis) => {
+                let data_trigger = (data >> 7) as u8;
+                let data_stick = data as u8;
+                match axis.into_u32() {
+                    65539 => emulator_controller.trigger_l = data_trigger,
+                    65540 => emulator_controller.trigger_r = data_trigger,
+                    65536 => emulator_controller.thumb_lx = data_stick,
+                    65537 => emulator_controller.thumb_ly = data_stick,
+                    65538 => emulator_controller.thumb_rx = data_stick,
+                    65541 => emulator_controller.thumb_ry = data_stick,
+                    _ => (),
+                }
+            }
             EventType::Disconnected => {
                 println!("Gamepad disconnected!");
                 return;
-            }
-            EventType::AxisValueChanged(val, axis) => {
-                let val = val as u8;
-                match axis.into_u32() {
-                    65539 => emulator_controller.trigger_l = val,
-                    65540 => emulator_controller.trigger_r = val,
-                    65536 => emulator_controller.thumb_lx = val,
-                    65537 => emulator_controller.thumb_ly = val,
-                    65538 => emulator_controller.thumb_rx = val,
-                    65541 => emulator_controller.thumb_ry = val,
-                    _ => (),
-                }
             }
         }
 
